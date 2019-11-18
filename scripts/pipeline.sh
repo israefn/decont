@@ -1,5 +1,5 @@
 #Download all the files specified in data/urls
-for url in $(ls data/urls) #TODO
+for url in $(cat data/urls) #TODO
 do
     bash scripts/download.sh $url data
 done
@@ -11,13 +11,18 @@ bash scripts/download.sh https://bioinformatics.cnio.es/data/courses/decont/cont
 bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
 
 # Merge the samples into a single file
-for sid in $(<list_of_sample_ids) #TODO
+for sid in $(ls data/*.sRNA.fastq.gz | cut -d "_" -f1 | sed 's:data/::' | sort | uniq) #TODO
 do
     bash scripts/merge_fastqs.sh data out/merged $sid
 done
 
 # TODO: run cutadapt for all merged files
-# cutadapt -m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed -o <trimmed_file> <input_file> > <log_file>
+
+echo "Running cutadapt..."
+mkdir -p log/cutadapt
+mkdir -p out/cutadapt
+cutadapt -m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed -o out/cutadapt/${sid}.trimmed.fastq.gz -p out/cutadapt/${sid}.trimmed.fastq.gz data/${sid}.fastq.gz data/${sid}.fastq.gz > log/cutadapt/${sid}.log
+
 
 #TODO: run STAR for all trimmed files
 for fname in out/trimmed/*.fastq.gz
