@@ -15,28 +15,32 @@ bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
 
 # Merge the samples into a single file
 
-for sid in $(ls data/*.sRNA.fastq.gz | cut -d "_" -f1 | sed 's:data/::' | sort | uniq)
+for sid in $(ls data/*.fastq.gz | cut -d "_" -f1 | sed 's:data/::' | sort | uniq)
 do
-    bash scripts/merge_fastqs.sh data out/merged $sid
+   bash scripts/merge_fastqs.sh data out/merged $sid
 done
 
 # Run cutadapt for all merged files
+# No estoy seguro de los directorios creados y del cutadapt
+# ls fname... correctos?
 
-for fname in out/merged/*.fastq.gz
+mkdir -P out/cutadapt
+mkdir -P log/cutadapt
+
+for fname in $(out/merged/*.fastq.gz)
 do
-   sid=$(ls data xxxxxxxxxxxxxxxx fname XXXXXXXXXXXX)
-
-    sid=$(ls out/merged/*.fastq.gz | cut -d "_" -f1 | sed 's:data/::' | sort | uniq)
-    mkdir -p log/cutadapt
-    mkdir -p out/cutadapt
+    sid=$(ls fname | cut -d "_" -f1 | sed 's:data/::' | sort | uniq)
     cutadapt -m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed -o out/cutadapt/${sid}.trimmed.fastq.gz data/${sid}.fastq.gz > log/cutadapt/${sid}.log
 done
 
-#TODO: run STAR for all trimmed files
-for fname in out/trimmed/*.fastq.gz
+# Run STAR for all trimmed files
+# $ en el for in?
+# No estoy seguro del STAR
+# el mkdir no se saca del for?
+
+for fname in XXXXXXXXXXXX$() out/trimmed/*.fastq.gz
 do
-    # you will need to obtain the sample ID from the filename
-    sid=$(ls data/*.sRNA.fastq.gz | cut -d "_" -f1 | sed 's:data/::' | sort | uniq)
+    sid=$(ls fname | cut -d "_" -f1 | sed 's:data/::' | sort | uniq)
     mkdir -p out/star/$sid
     STAR --runThreadN 4 --genomeDir res/contaminants_idx --outReadsUnmapped Fastx --readFilesIn out/cutadapt/${sid} --readFilesCommand zcat --outFileNamePrefix out/star/${sid}
 done 
