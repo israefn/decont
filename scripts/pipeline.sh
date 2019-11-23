@@ -40,8 +40,7 @@ do
     STAR --runThreadN 4 --genomeDir res/contaminants_idx --outReadsUnmapped Fastx --readFilesIn out/trimmed/${sid}.trimmed.fastq.gz --readFilesCommand zcat --outFileNamePrefix out/star/${sid}
 done
 
-# TODO: create a log file containing information from cutadapt and star logs
-# (this should be a single log file, and information should be *appended* to it on each run)
+# Creating a log file containing information from cutadapt and star logs (this should be a single log file, and information should be *appended* to it on each run)
 # - cutadapt: Reads with adapters and total basepairs
 # - star: Percentages of uniquely mapped reads, reads mapped to multiple loci, and to too many loci
 
@@ -49,7 +48,7 @@ touch log/pipeline.log
 for fname in out/trimmed/*.fastq.gz
 do
     sid=$(echo $fname | sed 's:out/trimmed/::' |sed 's:.trimmed.fastq.gz::' | sort | uniq)
-    echo $sid >> log/pipeline.log   
+    echo $sid >> log/pipeline.log
     cat log/cutadapt/$sid.log | grep "Reads with adapters" >> log/pipeline.log
     cat log/cutadapt/$sid.log | grep "^Total basepairs processed" >> log/pipeline.log
     cat out/star/$sid/Log.final.out | grep "Uniquely mapped reads %" >> log/pipeline.log
