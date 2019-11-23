@@ -50,8 +50,9 @@ for fname in out/trimmed/*.fastq.gz
 do
     sid=$(echo $fname | sed 's:out/trimmed/::' |sed 's:.trimmed.fastq.gz::' | sort | uniq)
     echo $sid >> log/pipeline.log   
-cat log/cutadapt/$sid.log | grep "Reads with adapters" >> log/pipeline.log
-XXXXXXXXXXXXXXXX "^Total basepairs"
-    cat out/star/$sid/Log.final.out |grep "
-
+    cat log/cutadapt/$sid.log | grep "Reads with adapters" >> log/pipeline.log
+    cat log/cutadapt/$sid.log | grep "^Total basepairs processed" >> log/pipeline.log
+    cat out/star/$sid/Log.final.out | grep "Uniquely mapped reads %" >> log/pipeline.log
+    cat out/star/$sid/Log.final.out | grep "% of reads mapped to multiple loci" >> log/pipeline.log
+    cat out/star/$sid/Log.final.out | grep "% or reads mapped to too many loci" >> log/pipeline.log
 done
