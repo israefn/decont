@@ -15,37 +15,43 @@ bash scripts/index.sh res/contaminants.fasta res/contaminants_idx
 
 # Merge the samples into a single file
 
-for sid in $(ls data/*.fastq.gz | cut -d "_" -f1 | sed 's:data/::' | sort | uniq)
+for sid in $(ls data/*.fastq.gz | cut -d "-" -f1 | sed 's:data/::' | sort | uniq)
 do
    bash scripts/merge_fastqs.sh data out/merged $sid
 done
 
 # Run cutadapt for all merged files
-# No estoy seguro de los directorios creados y del cutadapt
-# ls fname... correctos?
 
-mkdir -P out/cutadapt
-mkdir -P log/cutadapt
+mkdir -p out/trimmed
+mkdir -p log/cutadapt
 
-for fname in $(out/merged/*.fastq.gz)
+for fname in out/merged/*.fastq.gz
 do
-    sid=$(ls fname | cut -d "_" -f1 | sed 's:data/::' | sort | uniq)
-    cutadapt -m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed -o out/cutadapt/${sid}.trimmed.fastq.gz data/${sid}.fastq.gz > log/cutadapt/${sid}.log
+    sid=$(echo $fname | sed 's:out/merged/::' | sed 's:.fastq.gz::' | sort | uniq)
+    cutadapt -m 18 -a TGGAATTCTCGGGTGCCAAGG --discard-untrimmed -o out/trimmed/${sid}.trimmed.fastq.gz out/merged/${sid}.fastq.gz > log/cutadapt/${sid}.log
 done
 
 # Run STAR for all trimmed files
-# $ en el for in?
-# No estoy seguro del STAR
-# el mkdir no se saca del for?
 
-for fname in XXXXXXXXXXXX$() out/trimmed/*.fastq.gz
+for fname in out/trimmed/*.fastq.gz
 do
-    sid=$(ls fname | cut -d "_" -f1 | sed 's:data/::' | sort | uniq)
+    sid=$(echo $fname | sed 's:out/trimmed/::' |sed 's:.trimmed.fastq.gz::' | sort | uniq)
     mkdir -p out/star/$sid
-    STAR --runThreadN 4 --genomeDir res/contaminants_idx --outReadsUnmapped Fastx --readFilesIn out/cutadapt/${sid} --readFilesCommand zcat --outFileNamePrefix out/star/${sid}
-done 
+    STAR --runThreadN 4 --genomeDir res/contaminants_idx --outReadsUnmapped Fastx --readFilesIn out/trimmed/${sid}.trimmed.fastq.gz --readFilesCommand zcat --outFileNamePrefix out/star/${sid}
+done
 
 # TODO: create a log file containing information from cutadapt and star logs
 # (this should be a single log file, and information should be *appended* to it on each run)
 # - cutadapt: Reads with adapters and total basepairs
 # - star: Percentages of uniquely mapped reads, reads mapped to multiple loci, and to too many loci
+
+touch log/pipeline.log
+for fname in out/trimmed/*.fastq.gz
+do
+    sid=$(echo $fname | sed 's:out/trimmed/::' |sed 's:.trimmed.fastq.gz::' | sort | uniq)
+    echo $sid >> log/pipeline.log   
+cat log/cutadapt/$sid.log | grep "Reads with adapters" >> log/pipeline.log
+XXXXXXXXXXXXXXXX "^Total basepairs"
+    cat out/star/$sid/Log.final.out |grep "
+
+done

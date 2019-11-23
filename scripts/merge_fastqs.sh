@@ -3,9 +3,11 @@
 # The directory containing the samples is indicated by the first argument.
 
 echo "Merging all files...."
-mkdir -P out/merged
-cat data/C57BL_6NJ-12.5dpp.1.1s_sRNA.fastq.gz data/C57BL_6NJ-12.5dpp.1.2s_sRNA.fastq.gz > out/merged/C57BL_6NJ.fastq.gz 
-cat data/SPRET_EiJ-12.5dpp.1.1s_sRNA.fastq.gz data/SPRET_EiJ-12.5dpp.1.2s_sRNA.fastq.gz > out/merged/SPRET_EiJ.fastq.gz
-echo
+mkdir -p $2
+cat $1/$3-12.5dpp.1.1s_sRNA.fastq.gz $1/$3-12.5dpp.1.2s_sRNA.fastq.gz > $2/$3.fastq.gz 
+
+#mkdir -p out/merged
+#cat data/C57BL_6NJ-12.5dpp.1.1s_sRNA.fastq.gz data/C57BL_6NJ-12.5dpp.1.2s_sRNA.fastq.gz > out/merged/C57BL_6NJ.fastq.gz 
+#cat data/SPRET_EiJ-12.5dpp.1.1s_sRNA.fastq.gz data/SPRET_EiJ-12.5dpp.1.2s_sRNA.fastq.gz > out/merged/SPRET_EiJ.fastq.gz
 
 

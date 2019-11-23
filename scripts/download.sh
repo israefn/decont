@@ -3,12 +3,10 @@
 
 echo "Downloading the data..."
 wget -P $2 $1
-echo 
+echo
 if ["$3" == "yes"]
 then
 	gunzip -k $2/$(basename $1)
 fi
 echo
 
-#wget -P XXXXXXX/data httpp........................./*fastq.gz
-#if [
