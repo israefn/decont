@@ -1,4 +1,4 @@
-#Download all the files specified in data/urls
+# Download all the files specified in data/urls
 
 for url in $(cat data/urls)
 do
